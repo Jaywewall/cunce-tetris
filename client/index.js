@@ -7,13 +7,24 @@ const player2 = tetrisManager.createPlayer();
 player1.element.classList.add('local');
 player2.element.classList.add('local');
 
+// Logger
+const logger = new GameLogger();
+
 // Garbage Bridge
 player1.player.events.listen('garbage', (amount) => {
+    logger.log(`Player 1 sent ${amount} lines of garbage.`);
     player2.player.receiveIncomingAttack(amount);
 });
 player2.player.events.listen('garbage', (amount) => {
+    logger.log(`Player 2 sent ${amount} lines of garbage.`);
     player1.player.receiveIncomingAttack(amount);
 });
+
+// Game Settings State
+const gameSettings = {
+    swapControllers: false,
+    infiniteHold: true
+};
 
 // Input Handling (Keyboard)
 const keyListener = (event) => {
@@ -21,6 +32,7 @@ const keyListener = (event) => {
 
     const menuOverlay = document.getElementById('menu-overlay');
     const pauseMenu = document.getElementById('pause-menu');
+    const settingsMenu = document.getElementById('settings-menu');
 
     // Main Menu Navigation
     if (!menuOverlay.classList.contains('hidden')) {
@@ -30,7 +42,15 @@ const keyListener = (event) => {
         return;
     }
 
-    // Pause Menu Navigation (Simple for now: toggle pause on Esc)
+    // Settings Menu Navigation
+    if (!settingsMenu.classList.contains('hidden')) {
+        if (!event.repeat && (event.code === 'Escape')) {
+             document.getElementById('btn-back-settings').click();
+        }
+        return;
+    }
+
+    // Pause Menu Navigation
     if (!pauseMenu.classList.contains('hidden')) {
          if (!event.repeat && (event.code === 'Escape')) {
              document.getElementById('btn-resume').click();
@@ -106,16 +126,28 @@ startButton.addEventListener('click', () => {
     // If paused, unpause
     if (player1.paused) player1.togglePaused();
     if (player2.paused) player2.togglePaused();
-
-    // playMusic();
 });
 
-// Pause Menu Logic
+// Pause & Settings Menu Logic
 const pauseMenu = document.getElementById('pause-menu');
+const settingsMenu = document.getElementById('settings-menu');
+
 const btnResume = document.getElementById('btn-resume');
 const btnSettings = document.getElementById('btn-settings');
 const btnRestart = document.getElementById('btn-restart');
 const btnQuit = document.getElementById('btn-quit');
+
+const btnBackSettings = document.getElementById('btn-back-settings');
+const btnDownloadLogs = document.getElementById('btn-download-logs');
+const chkSwapControllers = document.getElementById('chk-swap-controllers');
+const chkInfiniteHold = document.getElementById('chk-infinite-hold');
+
+// Init Settings UI
+chkSwapControllers.checked = gameSettings.swapControllers;
+chkInfiniteHold.checked = gameSettings.infiniteHold;
+
+// Apply initial settings
+updateInfiniteHold();
 
 function togglePauseMenu() {
     if (pauseMenu.classList.contains('hidden')) {
@@ -131,28 +163,52 @@ function togglePauseMenu() {
     }
 }
 
+function updateInfiniteHold() {
+    // This requires updating Player class logic.
+    // We can inject this setting into the player instances directly or pass via TetrisManager,
+    // but direct property assignment is easiest given the scope.
+    player1.player.infiniteHold = gameSettings.infiniteHold;
+    player2.player.infiniteHold = gameSettings.infiniteHold;
+}
+
 btnResume.addEventListener('click', () => {
     togglePauseMenu();
 });
 
 btnSettings.addEventListener('click', () => {
-    alert("Settings coming soon!");
+    pauseMenu.classList.add('hidden');
+    settingsMenu.classList.remove('hidden');
+});
+
+btnBackSettings.addEventListener('click', () => {
+    settingsMenu.classList.add('hidden');
+    pauseMenu.classList.remove('hidden');
 });
 
 btnRestart.addEventListener('click', () => {
     pauseMenu.classList.add('hidden');
+    logger.clear();
     player1.startGame();
     player2.startGame();
 });
 
 btnQuit.addEventListener('click', () => {
     pauseMenu.classList.add('hidden');
-    // Ideally we should reset game state here, but for now we just show main menu
-    // And let Start Game handle restart or resume.
-    // To properly quit, we might reload the page or implement a full reset.
     location.reload();
 });
 
+btnDownloadLogs.addEventListener('click', () => {
+    logger.download();
+});
+
+chkSwapControllers.addEventListener('change', (e) => {
+    gameSettings.swapControllers = e.target.checked;
+});
+
+chkInfiniteHold.addEventListener('change', (e) => {
+    gameSettings.infiniteHold = e.target.checked;
+    updateInfiniteHold();
+});
 
 function playMusic() {
   const sound = document.createElement("audio");
@@ -171,8 +227,8 @@ const inputState = {
     1: { lastMove: 0, nextMoveTime: 0, lastDrop: 0, nextDropTime: 0, buttons: {} }
 };
 
-const DAS_DELAY = 160; // Delay Auto Shift
-const ARR_DELAY = 50;  // Auto Repeat Rate
+const DAS_DELAY = 160;
+const ARR_DELAY = 50;
 
 function pollGamepads() {
     const gamepads = navigator.getGamepads();
@@ -181,10 +237,32 @@ function pollGamepads() {
         return;
     }
 
-    // Player 1 (Gamepad 0)
-    if (gamepads[0]) handleGamepadInput(gamepads[0], player1, 0);
-    // Player 2 (Gamepad 1)
-    if (gamepads[1]) handleGamepadInput(gamepads[1], player2, 1);
+    // Determine controller mapping based on Swap Setting
+    // If Swap is FALSE: GP0 -> P1, GP1 -> P2
+    // If Swap is TRUE:  GP0 -> P2, GP1 -> P1
+
+    let p1Gamepad = gamepads[0];
+    let p2Gamepad = gamepads[1];
+
+    if (gameSettings.swapControllers) {
+        p1Gamepad = gamepads[1];
+        p2Gamepad = gamepads[0];
+    }
+
+    // Process Inputs
+    // Note: We use index 0/1 for state tracking still, but apply to swapped players if needed.
+    // However, it's cleaner to track state by gamepad index (0/1) rather than player.
+    // So if GP0 is P2, we use inputState[0] but apply actions to player2.
+
+    if (gamepads[0]) {
+        const targetPlayer = gameSettings.swapControllers ? player2 : player1;
+        handleGamepadInput(gamepads[0], targetPlayer, 0);
+    }
+
+    if (gamepads[1]) {
+        const targetPlayer = gameSettings.swapControllers ? player1 : player2;
+        handleGamepadInput(gamepads[1], targetPlayer, 1);
+    }
 
     requestAnimationFrame(pollGamepads);
 }
@@ -193,14 +271,8 @@ function handleGamepadInput(gp, player, index) {
     const state = inputState[index];
     const now = Date.now();
 
-    // Mapping (Standard Xbox/DualShock)
-    // 0: A/Cross, 1: B/Circle, 2: X/Square, 3: Y/Triangle
-    // 9: Start (Pause)
-
     const btns = gp.buttons;
     const axes = gp.axes;
-
-    // Threshold for axes
     const axisThreshold = 0.5;
 
     const currentButtons = {
@@ -208,10 +280,10 @@ function handleGamepadInput(gp, player, index) {
         right: (btns[15] && btns[15].pressed) || (axes[0] && axes[0] > axisThreshold),
         down: (btns[13] && btns[13].pressed) || (axes[1] && axes[1] > axisThreshold),
         up: (btns[12] && btns[12].pressed) || (axes[1] && axes[1] < -axisThreshold) || (btns[3] && btns[3].pressed),
-        rotR: btns[1] && btns[1].pressed, // B (Swapped per user request)
-        rotL: btns[0] && btns[0].pressed, // A (Swapped per user request)
-        hold: (btns[2] && btns[2].pressed) || (btns[4] && btns[4].pressed), // X or LB
-        start: btns[9] && btns[9].pressed // Start button
+        rotR: btns[1] && btns[1].pressed,
+        rotL: btns[0] && btns[0].pressed,
+        hold: (btns[5] && btns[5].pressed) || (btns[4] && btns[4].pressed),
+        start: btns[9] && btns[9].pressed
     };
 
     // Global Pause / Menu Start
@@ -220,6 +292,8 @@ function handleGamepadInput(gp, player, index) {
              document.getElementById('btn-start').click();
         } else if (!document.getElementById('pause-menu').classList.contains('hidden')) {
              document.getElementById('btn-resume').click();
+        } else if (!document.getElementById('settings-menu').classList.contains('hidden')) {
+             document.getElementById('btn-back-settings').click();
         } else {
             togglePauseMenu();
         }
@@ -230,38 +304,29 @@ function handleGamepadInput(gp, player, index) {
         return;
     }
 
-    // Rotate Right - Single Press
     if (currentButtons.rotR && !state.buttons.rotR) player.player.rotate(1);
-
-    // Rotate Left - Single Press
     if (currentButtons.rotL && !state.buttons.rotL) player.player.rotate(-1);
-
-    // Hold - Single Press
     if (currentButtons.hold && !state.buttons.hold) player.player.hold();
-
-    // Hard Drop - Single Press
     if (currentButtons.up && !state.buttons.up) player.player.hardDrop();
 
-    // Movement (DAS)
     if (currentButtons.left) {
-        if (!state.buttons.left) { // Just pressed
+        if (!state.buttons.left) {
             player.player.move(-1);
             state.nextMoveTime = now + DAS_DELAY;
-        } else if (now > state.nextMoveTime) { // Held
+        } else if (now > state.nextMoveTime) {
             player.player.move(-1);
             state.nextMoveTime = now + ARR_DELAY;
         }
     } else if (currentButtons.right) {
-        if (!state.buttons.right) { // Just pressed
+        if (!state.buttons.right) {
             player.player.move(1);
             state.nextMoveTime = now + DAS_DELAY;
-        } else if (now > state.nextMoveTime) { // Held
+        } else if (now > state.nextMoveTime) {
             player.player.move(1);
             state.nextMoveTime = now + ARR_DELAY;
         }
     }
 
-    // Soft Drop (Throttled but faster than movement usually)
     if (currentButtons.down) {
          if (now > state.nextDropTime) {
             player.player.drop();
@@ -269,9 +334,7 @@ function handleGamepadInput(gp, player, index) {
         }
     }
 
-    // Update state
     state.buttons = currentButtons;
 }
 
-// Start polling
 requestAnimationFrame(pollGamepads);

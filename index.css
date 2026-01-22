@@ -1,3 +1,10 @@
+/* Reusing .menu-overlay for pause menu, so no changes needed in CSS structure for basic overlay.
+   However, we need to ensure it sits on top. Z-index 100 is already set.
+   The issue might be that it's just 'hidden' or 'visible' but the layout might be interfering.
+   Since it's fixed position top:0 left:0 width:100vw height:100vh, it SHOULD be full screen overlay.
+   Let's check if there are any conflicting styles.
+*/
+
 body {
   color: #fff;
   font-family: sans-serif;
@@ -104,7 +111,7 @@ body {
 }
 
 /* Menu Overlay Styles */
-#menu-overlay {
+#menu-overlay, #pause-menu, #settings-menu {
   position: fixed;
   top: 0;
   left: 0;
@@ -114,11 +121,11 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 100;
+  z-index: 1000; /* Increased z-index to be safe */
   transition: opacity 0.3s ease;
 }
 
-#menu-overlay.hidden {
+.menu-overlay.hidden {
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
@@ -126,7 +133,7 @@ body {
 
 .menu-content {
   text-align: center;
-  background: rgba(40, 40, 50, 0.9);
+  background: rgba(40, 40, 50, 0.95);
   padding: 40px;
   border: 2px solid #fff;
   border-radius: 10px;
@@ -155,6 +162,22 @@ body {
   background: #fff;
   color: #000;
   box-shadow: 0 0 15px #fff;
+}
+
+/* Settings Specific Styles */
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px 0;
+    font-size: 20px;
+    width: 100%;
+    min-width: 400px;
+}
+
+.setting-row input[type="checkbox"] {
+    transform: scale(2);
+    cursor: pointer;
 }
 
 .controls-info {
