@@ -13,6 +13,7 @@
     <script src='client/index.js' defer></script>
   </head>
   <body>
+    <!-- Main Menu -->
     <div id="menu-overlay" class="menu-overlay">
       <div class="menu-content">
         <h1>TETRIS LOCAL CO-OP</h1>
@@ -36,6 +37,17 @@
       </div>
     </div>
 
+    <!-- Pause Menu -->
+    <div id="pause-menu" class="menu-overlay hidden">
+      <div class="menu-content">
+        <h1>PAUSED</h1>
+        <button id="btn-resume" class="menu-button selected">RESUME</button>
+        <button id="btn-settings" class="menu-button">SETTINGS</button>
+        <button id="btn-restart" class="menu-button">RESTART</button>
+        <button id="btn-quit" class="menu-button">QUIT</button>
+      </div>
+    </div>
+
     <div id="game-container"></div>
 
     <template id="full-game-template">
@@ -46,7 +58,6 @@
           <canvas class='garbage' width='35' height='595'></canvas>
         </div>
         <div class="mid-column">
-          <!-- Start button removed from template as we use global menu -->
           <canvas class='tetris' width='350' height='735'></canvas>
           <div class="score">-</div>
         </div>

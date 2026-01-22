@@ -19,18 +19,28 @@ player2.player.events.listen('garbage', (amount) => {
 const keyListener = (event) => {
     if (event.type !== 'keydown') return;
 
-    // Menu navigation
-    if (!document.getElementById('menu-overlay').classList.contains('hidden')) {
+    const menuOverlay = document.getElementById('menu-overlay');
+    const pauseMenu = document.getElementById('pause-menu');
+
+    // Main Menu Navigation
+    if (!menuOverlay.classList.contains('hidden')) {
         if (!event.repeat && (event.code === 'Enter' || event.code === 'Space')) {
             document.getElementById('btn-start').click();
         }
         return;
     }
 
+    // Pause Menu Navigation (Simple for now: toggle pause on Esc)
+    if (!pauseMenu.classList.contains('hidden')) {
+         if (!event.repeat && (event.code === 'Escape')) {
+             document.getElementById('btn-resume').click();
+         }
+         return;
+    }
+
     // Global Pause
     if (!event.repeat && event.code === 'Escape') {
-        player1.togglePaused();
-        player2.togglePaused();
+        togglePauseMenu();
         return;
     }
 
@@ -100,6 +110,50 @@ startButton.addEventListener('click', () => {
     // playMusic();
 });
 
+// Pause Menu Logic
+const pauseMenu = document.getElementById('pause-menu');
+const btnResume = document.getElementById('btn-resume');
+const btnSettings = document.getElementById('btn-settings');
+const btnRestart = document.getElementById('btn-restart');
+const btnQuit = document.getElementById('btn-quit');
+
+function togglePauseMenu() {
+    if (pauseMenu.classList.contains('hidden')) {
+        // Pause Game
+        if (!player1.paused) player1.togglePaused();
+        if (!player2.paused) player2.togglePaused();
+        pauseMenu.classList.remove('hidden');
+    } else {
+        // Resume Game
+        if (player1.paused) player1.togglePaused();
+        if (player2.paused) player2.togglePaused();
+        pauseMenu.classList.add('hidden');
+    }
+}
+
+btnResume.addEventListener('click', () => {
+    togglePauseMenu();
+});
+
+btnSettings.addEventListener('click', () => {
+    alert("Settings coming soon!");
+});
+
+btnRestart.addEventListener('click', () => {
+    pauseMenu.classList.add('hidden');
+    player1.startGame();
+    player2.startGame();
+});
+
+btnQuit.addEventListener('click', () => {
+    pauseMenu.classList.add('hidden');
+    // Ideally we should reset game state here, but for now we just show main menu
+    // And let Start Game handle restart or resume.
+    // To properly quit, we might reload the page or implement a full reset.
+    location.reload();
+});
+
+
 function playMusic() {
   const sound = document.createElement("audio");
   sound.src = "audio/awesome-awesome-tetris-remix.mp3";
@@ -140,9 +194,7 @@ function handleGamepadInput(gp, player, index) {
     const now = Date.now();
 
     // Mapping (Standard Xbox/DualShock)
-    // 0: A/Cross (Rot R), 1: B/Circle (Rot L), 2: X/Square (Hold), 3: Y/Triangle (Hard Drop)
-    // 12: D-Up (Hard Drop), 13: D-Down (Soft Drop), 14: D-Left, 15: D-Right
-    // 4: LB (Hold), 5: RB
+    // 0: A/Cross, 1: B/Circle, 2: X/Square, 3: Y/Triangle
     // 9: Start (Pause)
 
     const btns = gp.buttons;
@@ -156,8 +208,8 @@ function handleGamepadInput(gp, player, index) {
         right: (btns[15] && btns[15].pressed) || (axes[0] && axes[0] > axisThreshold),
         down: (btns[13] && btns[13].pressed) || (axes[1] && axes[1] > axisThreshold),
         up: (btns[12] && btns[12].pressed) || (axes[1] && axes[1] < -axisThreshold) || (btns[3] && btns[3].pressed),
-        rotR: btns[0] && btns[0].pressed, // A
-        rotL: btns[1] && btns[1].pressed, // B
+        rotR: btns[1] && btns[1].pressed, // B (Swapped per user request)
+        rotL: btns[0] && btns[0].pressed, // A (Swapped per user request)
         hold: (btns[2] && btns[2].pressed) || (btns[4] && btns[4].pressed), // X or LB
         start: btns[9] && btns[9].pressed // Start button
     };
@@ -166,9 +218,10 @@ function handleGamepadInput(gp, player, index) {
     if (currentButtons.start && !state.buttons.start) {
         if (!document.getElementById('menu-overlay').classList.contains('hidden')) {
              document.getElementById('btn-start').click();
+        } else if (!document.getElementById('pause-menu').classList.contains('hidden')) {
+             document.getElementById('btn-resume').click();
         } else {
-            player1.togglePaused();
-            player2.togglePaused();
+            togglePauseMenu();
         }
     }
 
