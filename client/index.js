@@ -37,11 +37,11 @@ function updateWinCounters() {
 
 // Garbage Bridge
 player1.player.events.listen('garbage', (amount) => {
-    logger.log(`Player 1 sent ${amount} lines of garbage.`);
+    logger.log('GarbageSent', { from: 'P1', amount });
     player2.player.receiveIncomingAttack(amount);
 });
 player2.player.events.listen('garbage', (amount) => {
-    logger.log(`Player 2 sent ${amount} lines of garbage.`);
+    logger.log('GarbageSent', { from: 'P2', amount });
     player1.player.receiveIncomingAttack(amount);
 });
 
@@ -64,11 +64,11 @@ function handleGameOver(loserIndex) {
     if (loserIndex === 1) { // P1 lost
         p2Wins++;
         winner = "Player 2 Wins!";
-        logger.log("Player 1 topped out. Player 2 Wins!");
+        logger.log('GameOver', { loser: 'P1', winner: 'P2' });
     } else { // P2 lost
         p1Wins++;
         winner = "Player 1 Wins!";
-        logger.log("Player 2 topped out. Player 1 Wins!");
+        logger.log('GameOver', { loser: 'P2', winner: 'P1' });
     }
 
     updateWinCounters();
@@ -81,8 +81,14 @@ function handleGameOver(loserIndex) {
     menuNavigator.setActiveMenu('gameover');
 }
 
-player1.player.events.listen('gameOver', () => handleGameOver(1));
-player2.player.events.listen('gameOver', () => handleGameOver(2));
+player1.player.events.listen('gameOver', () => {
+    console.log("P1 Game Over Event Received");
+    handleGameOver(1);
+});
+player2.player.events.listen('gameOver', () => {
+    console.log("P2 Game Over Event Received");
+    handleGameOver(2);
+});
 
 // Game Settings State
 const gameSettings = {
@@ -235,7 +241,7 @@ const startButton = document.getElementById('btn-start');
 startButton.addEventListener('click', () => {
     menuOverlay.classList.add('hidden');
     menuNavigator.activeMenu = null; // Game is active
-    logger.log("Game Started");
+    logger.log('GameStarted');
 
     // Start both games if not already running
     if (!player1.gameOn) player1.startGame();
@@ -311,7 +317,7 @@ btnBackSettings.addEventListener('click', () => {
 btnRestart.addEventListener('click', () => {
     pauseMenu.classList.add('hidden');
     logger.clear();
-    logger.log("Game Restarted");
+    logger.log('GameRestarted');
     player1.startGame();
     player2.startGame();
     menuNavigator.activeMenu = null;
@@ -336,7 +342,7 @@ chkInfiniteHold.addEventListener('change', (e) => {
 
 btnNextRound.addEventListener('click', () => {
     gameOverMenu.classList.add('hidden');
-    logger.log("Next Round Started");
+    logger.log('NextRoundStarted');
     player1.startGame();
     player2.startGame();
     menuNavigator.activeMenu = null;

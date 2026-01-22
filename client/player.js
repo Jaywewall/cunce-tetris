@@ -256,7 +256,7 @@ class Player {
     // if there is collision upon reset, end game
     if (this.arena.collide(this)) {
       // merges final piece onto arena
-      this.matrix.shift()
+      // this.matrix.shift() // Removing this weird shift as it might break the matrix structure
       this.arena.merge(this)
       this.tetris.gameOver()
     }
