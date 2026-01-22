@@ -392,11 +392,14 @@ class Tetris {
 
     // new Arena and Player, set score at 0 and clear held box
     this.arena = new Arena(10, 21);
-    this.player = new Player(this);
+
+    // Reuse existing player instance to keep event listeners attached
+    this.player.restart();
+
     this.updateScore(0)
-    this.player.events.listen('score', score => this.updateScore(score));
+    // this.player.events.listen('score', score => this.updateScore(score)); // Listener already attached in constructor
     this.clearCanvas(this.heldCanvas, this["heldContext"], 30)
-    //// Some of the above code is repetitive and needs to be refactored
+    this.updateIndicator();
 
     this.paused = false;
     this.gameOn = true;
@@ -407,7 +410,7 @@ class Tetris {
   gameOver() {
     // draws final board, pauses game, and ends it
     this.drawMatrix(this.arena.matrix, this.context, {x: 0, y: 0}, 35)
-    this.arena.events.emit('matrix', this.matrix);
+
     this.paused = true;
     this.gameOn = false;
     this.gameDone = true;

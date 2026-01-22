@@ -46,6 +46,18 @@ class Player {
     this.reset();
   }
 
+  restart() {
+    this.arena = this.tetris.arena;
+    this.score = 0;
+    this.dropInterval = 1000;
+    this.dropCounter = 0;
+    this.incomingGarbage = [];
+    this.heldLetter = null;
+    this.canHold = true;
+    this.forecast = this.getInitialForecast();
+    this.reset();
+  }
+
   move(direction) {
     this.position.x += direction
     if (this.arena.collide(this)) {

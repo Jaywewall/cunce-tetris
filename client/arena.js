@@ -54,8 +54,7 @@ class Arena {
       const arenaRow = this.matrix[y + playerPosition.y]
       for (let x = 0; x < playerMatrix[y].length; ++x) { // per column/pixel
         const piecePixelIsPresent = (playerMatrix[y][x] !== 0)
-        const arenaPixelIsPresent = (arenaRow && arenaRow[x + playerPosition.x]) !== 0
-        if (piecePixelIsPresent && arenaPixelIsPresent) {
+        if (piecePixelIsPresent && (arenaRow && arenaRow[x + playerPosition.x] !== 0)) {
               return true
         }
       }
@@ -67,7 +66,9 @@ class Arena {
     player.matrix.forEach((row, y) => {
       row.forEach((value, x) => {
         if (value !== 0) {
-          this.matrix[y + player.position.y][x + player.position.x] = value
+          if (this.matrix[y + player.position.y]) {
+            this.matrix[y + player.position.y][x + player.position.x] = value
+          }
         }
       });
     });
