@@ -2,7 +2,7 @@
 <html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8">
-    <title>Tetris v2</title>
+    <title>Tetris Local Co-op</title>
     <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
     <link rel="stylesheet" href="index.css">
     <script src='client/arena.js' defer></script>
@@ -10,10 +10,35 @@
     <script src='client/player.js' defer></script>
     <script src='client/events.js' defer></script>
     <script src='client/tetrisManager.js' defer></script>
-    <script src='client/connectionManager.js' defer></script>
+    <!-- connectionManager is removed -->
     <script src='client/index.js' defer></script>
   </head>
   <body>
+    <div id="menu-overlay" class="menu-overlay">
+      <div class="menu-content">
+        <h1>TETRIS LOCAL CO-OP</h1>
+        <button id="btn-start" class="menu-button selected">START GAME</button>
+        <div class="controls-info">
+          <div class="player-controls">
+            <h3>Player 1</h3>
+            <p>WASD to Move/Drop</p>
+            <p>Q/E to Rotate</p>
+            <p>Shift to Hold</p>
+            <p>🎮 Controller 1</p>
+          </div>
+          <div class="player-controls">
+            <h3>Player 2</h3>
+            <p>Arrows to Move/Drop</p>
+            <p>Num 1/2 to Rotate</p>
+            <p>Num 0 to Hold</p>
+            <p>🎮 Controller 2</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="game-container"></div>
+
     <template id="full-game-template">
       <div class="full-game">
         <div class="left-column">
@@ -22,7 +47,7 @@
           <canvas class='garbage' width='35' height='595'></canvas>
         </div>
         <div class="mid-column">
-          <button class="hoverable start-button">Start Game</button>
+          <!-- Start button removed from template as we use global menu -->
           <canvas class='tetris' width='350' height='735'></canvas>
           <div class="score">-</div>
         </div>

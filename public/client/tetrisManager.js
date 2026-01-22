@@ -12,21 +12,24 @@ class TetrisManager {
 
     if (opponent) {
       const startButton = element.querySelector(".start-button")
-      startButton.remove()
+      if (startButton) startButton.remove()
     }
     
-    this.document.body.appendChild(tetris.element);
+    const container = this.document.getElementById('game-container') || this.document.body;
+    container.appendChild(tetris.element);
     return tetris;
   }
 
   removePlayer(tetris) {
     this.instances.delete(tetris)
-    this.document.body.removeChild(tetris.element);
+    const container = this.document.getElementById('game-container') || this.document.body;
+    container.removeChild(tetris.element);
   }
 
   sortPlayers(tetrisGames) {
+    const container = this.document.getElementById('game-container') || this.document.body;
     tetrisGames.forEach(tetris => {
-      this.document.body.appendChild(tetris.element);
+      container.appendChild(tetris.element);
     })
   }
 }
