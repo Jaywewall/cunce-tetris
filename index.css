@@ -1,0 +1,239 @@
+/* Reusing .menu-overlay for pause menu, so no changes needed in CSS structure for basic overlay.
+   However, we need to ensure it sits on top. Z-index 100 is already set.
+   The issue might be that it's just 'hidden' or 'visible' but the layout might be interfering.
+   Since it's fixed position top:0 left:0 width:100vw height:100vh, it SHOULD be full screen overlay.
+   Let's check if there are any conflicting styles.
+*/
+
+body {
+  color: #fff;
+  font-family: sans-serif;
+  font-size: 2em;
+  text-align: center;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(270deg, #ac511d, #c82858, #28b2c8, #28c84a, #c8c528, #2879c8, #6b28c8);
+  background-size: 1400% 1400%;
+
+  -webkit-animation: AnimationName 100s ease infinite;
+  -moz-animation: AnimationName 100s ease infinite;
+  animation: AnimationName 100s ease infinite;
+}
+@-webkit-keyframes AnimationName {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+@-moz-keyframes AnimationName {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+@keyframes AnimationName {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+#game-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.left-column {
+  width: 160px;
+  margin-left: 10px;
+}
+
+.mid-column {
+  width: 730px;
+  height: 800px;
+  position: relative;
+}
+
+.right-column {
+  width: 160px;
+  margin-right: 10px;
+}
+
+.full-game.local {
+  border-color: #fff;
+}
+
+.full-game {
+  width: 630px;
+  border: 1px solid #707070;
+  display: flex;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.3); /* Slightly darken background for better visibility */
+}
+
+/* Scale down slightly for smaller screens if needed, but keeping original size for now */
+@media (max-width: 1300px) {
+  .full-game {
+    transform: scale(0.8);
+    margin: -50px; /* Compensate for scale */
+  }
+}
+
+.side-box {
+  border: 1px solid #FFFFFF;
+  vertical-align: top;
+}
+
+.garbage {
+  float: right;
+  margin-top: 10px;
+}
+
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.start-button {
+  /* Keeping this class for backward compatibility or if needed, but mostly replaced by menu */
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(270deg, #ac511d, #c82858, #28b2c8, #28c84a, #c8c528, #2879c8, #6b28c8);
+  background-size: 1400% 1400%;
+  animation: AnimationName 100s ease infinite;
+}
+
+/* Menu Overlay Styles */
+#menu-overlay, #pause-menu, #settings-menu, #game-over-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Increased z-index to be safe */
+  transition: opacity 0.3s ease;
+}
+
+.menu-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.menu-content {
+  text-align: center;
+  background: rgba(40, 40, 50, 0.95);
+  padding: 40px;
+  border: 2px solid #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+.menu-content h1 {
+  font-size: 3em;
+  margin-bottom: 40px;
+  text-shadow: 0 0 10px #28b2c8;
+}
+
+.menu-button {
+  background: transparent;
+  border: 2px solid #fff;
+  color: #fff;
+  font-size: 24px;
+  padding: 10px 40px;
+  margin: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+
+.menu-button:hover, .menu-button.selected {
+  background: #fff;
+  color: #000;
+  box-shadow: 0 0 15px #fff;
+  border-color: #28b2c8;
+}
+
+.win-counter {
+  font-size: 24px;
+  color: #ffeb3b;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 4px #000;
+}
+
+/* Settings Specific Styles */
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px 0;
+    font-size: 20px;
+    width: 100%;
+    min-width: 400px;
+}
+
+.setting-row input[type="checkbox"] {
+    transform: scale(2);
+    cursor: pointer;
+}
+
+.controls-info {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 40px;
+  gap: 40px;
+  text-align: left;
+}
+
+.player-controls h3 {
+  border-bottom: 1px solid #777;
+  padding-bottom: 10px;
+  margin-bottom: 15px;
+}
+
+.player-controls p {
+  font-size: 16px;
+  margin: 5px 0;
+  color: #ccc;
+}
+
+/* Button styles imported */
+button {
+  color: #FFFFFF;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 40px;
+  max-width: 160px;
+  position: relative;
+  text-decoration: none;
+  text-transform: uppercase;
+  width: 100%;
+}
+.hoverable {
+  border: 0 solid;
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, 0);
+  outline: 1px solid;
+  outline-color: rgba(255, 255, 255, .5);
+  outline-offset: 0px;
+  text-shadow: none;
+  transition: all 1250ms cubic-bezier(0.19, 1, 0.22, 1);
+}
+.hoverable:hover {
+  border: 1px solid;
+  box-shadow: inset 0 0 20px rgba(255, 255, 255, .5), 0 0 20px rgba(255, 255, 255, .2);
+  outline-color: rgba(255, 255, 255, 0);
+  outline-offset: 15px;
+  text-shadow: 1px 1px 2px #427388;
+}

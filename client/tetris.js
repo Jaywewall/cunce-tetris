@@ -388,7 +388,7 @@ class Tetris {
 
   startGame() {
     const startButton = this.element.querySelector(".start-button")
-    startButton.style.display = "none";
+    if (startButton) startButton.style.display = "none";
 
     // new Arena and Player, set score at 0 and clear held box
     this.arena = new Arena(10, 21);
@@ -411,11 +411,7 @@ class Tetris {
     this.paused = true;
     this.gameOn = false;
     this.gameDone = true;
-
-    // show replay button
-    const startButton = this.element.querySelector(".start-button")
-    startButton.style.display = "block";
-    startButton.innerText = "Play Again?";
+    this.player.events.emit('gameOver');
   }
 
 }

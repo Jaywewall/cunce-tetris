@@ -1,0 +1,6 @@
+
+> puyo-puyo-tetris-ii@1.0.0 start
+> node server/index.js
+
+Listening on 9000
+Terminated

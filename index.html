@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Tetris Local Co-op</title>
+    <link rel="shortcut icon" type="image/x-icon" href="favicon.ico"/>
+    <link rel="stylesheet" href="index.css">
+    <script src='client/arena.js' defer></script>
+    <script src='client/tetris.js' defer></script>
+    <script src='client/player.js' defer></script>
+    <script src='client/events.js' defer></script>
+    <script src='client/tetrisManager.js' defer></script>
+    <script src='client/logger.js' defer></script>
+    <script src='client/index.js' defer></script>
+  </head>
+  <body>
+    <!-- Main Menu -->
+    <div id="menu-overlay" class="menu-overlay">
+      <div class="menu-content">
+        <h1>TETRIS LOCAL CO-OP</h1>
+        <button id="btn-start" class="menu-button selected">START GAME</button>
+        <div class="controls-info">
+          <div class="player-controls">
+            <h3>Player 1</h3>
+            <p>WASD to Move/Drop</p>
+            <p>Q/E to Rotate</p>
+            <p>Shift to Hold</p>
+            <p>🎮 Controller 1</p>
+          </div>
+          <div class="player-controls">
+            <h3>Player 2</h3>
+            <p>Arrows to Move/Drop</p>
+            <p>Num 1/2 to Rotate</p>
+            <p>Num 0 to Hold</p>
+            <p>🎮 Controller 2</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pause Menu -->
+    <div id="pause-menu" class="menu-overlay hidden">
+      <div class="menu-content">
+        <h1>PAUSED</h1>
+        <button id="btn-resume" class="menu-button selected">RESUME</button>
+        <button id="btn-settings" class="menu-button">SETTINGS</button>
+        <button id="btn-restart" class="menu-button">RESTART</button>
+        <button id="btn-quit" class="menu-button">QUIT</button>
+      </div>
+    </div>
+
+    <!-- Settings Menu -->
+    <div id="settings-menu" class="menu-overlay hidden">
+      <div class="menu-content">
+        <h1>SETTINGS</h1>
+        <div class="setting-row">
+          <label for="chk-swap-controllers">Swap Controllers (P1 <-> P2)</label>
+          <input type="checkbox" id="chk-swap-controllers">
+        </div>
+        <div class="setting-row">
+          <label for="chk-infinite-hold">Infinite Hold</label>
+          <input type="checkbox" id="chk-infinite-hold" checked>
+        </div>
+        <div class="setting-row">
+           <button id="btn-download-logs" class="menu-button" style="width: 100%;">Download Game Logs</button>
+        </div>
+        <button id="btn-back-settings" class="menu-button">BACK</button>
+      </div>
+    </div>
+
+    <!-- Game Over Menu -->
+    <div id="game-over-menu" class="menu-overlay hidden">
+      <div class="menu-content">
+        <h1>GAME OVER</h1>
+        <h2 id="winner-text" style="margin-bottom: 30px; color: #28c84a;">Player 1 Wins!</h2>
+        <button id="btn-next-round" class="menu-button selected">NEXT ROUND</button>
+        <button id="btn-quit-gameover" class="menu-button">QUIT</button>
+      </div>
+    </div>
+
+    <div id="game-container"></div>
+
+    <template id="full-game-template">
+      <div class="full-game">
+        <div class="left-column">
+          HOLD
+          <canvas class='side-box held' width='120' height='90'></canvas>
+          <canvas class='garbage' width='35' height='595'></canvas>
+        </div>
+        <div class="mid-column">
+          <div class="win-counter">Wins: <span class="wins">0</span></div>
+          <canvas class='tetris' width='350' height='735'></canvas>
+          <div class="score">-</div>
+        </div>
+        <div class="right-column">
+          NEXT
+          <canvas class='side-box forecast forecast0' width='120' height='90'></canvas>
+          <canvas class='side-box forecast forecast1' width='120' height='90'></canvas>
+          <canvas class='side-box forecast forecast2' width='120' height='90'></canvas>
+          <canvas class='side-box forecast forecast3' width='120' height='90'></canvas>
+          <canvas class='side-box forecast forecast4' width='120' height='90'></canvas>
+        </div>
+      </div>
+    </template>
+
+  </body>
+</html>

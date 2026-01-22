@@ -11,6 +11,7 @@ class Player {
     this.events = new Events();
 
     this.canHold = true
+    this.infiniteHold = true; // Default
     this.heldLetter = null
     this.score = 0
     this.dropInterval = 1000
@@ -149,9 +150,9 @@ class Player {
   }
 
   hold() {
-    if (this.canHold) {
-      // prevent another switch this round
-      this.canHold = false
+    if (this.canHold || this.infiniteHold) {
+      // prevent another switch this round (unless infinite)
+      if (!this.infiniteHold) this.canHold = false
       if (this.heldLetter) {
         // grab saved letter and switch
         [this.heldLetter, this.letter] = [this.letter, this.heldLetter]
@@ -178,6 +179,10 @@ class Player {
     if (this.arena.collide(this)) {
       this.position.y--
       this.arena.merge(this)
+      if (this.position.y < 0) {
+        this.tetris.gameOver();
+        return;
+      }
       this.nextTurn()
       return;
     }
@@ -190,6 +195,10 @@ class Player {
     this.score += (this.position.y - originalPosition)
     this.events.emit('score', this.score);
     this.arena.merge(this)
+    if (this.position.y < 0) {
+      this.tetris.gameOver();
+      return;
+    }
     this.nextTurn()
     this.dropCounter = 0
   }
@@ -247,7 +256,7 @@ class Player {
     // if there is collision upon reset, end game
     if (this.arena.collide(this)) {
       // merges final piece onto arena
-      this.matrix.shift()
+      // this.matrix.shift() // Removing this weird shift as it might break the matrix structure
       this.arena.merge(this)
       this.tetris.gameOver()
     }
