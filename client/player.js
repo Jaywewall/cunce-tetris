@@ -179,6 +179,10 @@ class Player {
     if (this.arena.collide(this)) {
       this.position.y--
       this.arena.merge(this)
+      if (this.position.y < 0) {
+        this.tetris.gameOver();
+        return;
+      }
       this.nextTurn()
       return;
     }
@@ -191,6 +195,10 @@ class Player {
     this.score += (this.position.y - originalPosition)
     this.events.emit('score', this.score);
     this.arena.merge(this)
+    if (this.position.y < 0) {
+      this.tetris.gameOver();
+      return;
+    }
     this.nextTurn()
     this.dropCounter = 0
   }
