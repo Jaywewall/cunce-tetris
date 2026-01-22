@@ -411,13 +411,7 @@ class Tetris {
     this.paused = true;
     this.gameOn = false;
     this.gameDone = true;
-
-    // show replay button
-    const startButton = this.element.querySelector(".start-button")
-    if (startButton) {
-      startButton.style.display = "block";
-      startButton.innerText = "Play Again?";
-    }
+    this.player.events.emit('gameOver');
   }
 
 }

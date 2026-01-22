@@ -111,7 +111,7 @@ body {
 }
 
 /* Menu Overlay Styles */
-#menu-overlay, #pause-menu, #settings-menu {
+#menu-overlay, #pause-menu, #settings-menu, #game-over-menu {
   position: fixed;
   top: 0;
   left: 0;
@@ -162,6 +162,14 @@ body {
   background: #fff;
   color: #000;
   box-shadow: 0 0 15px #fff;
+  border-color: #28b2c8;
+}
+
+.win-counter {
+  font-size: 24px;
+  color: #ffeb3b;
+  margin-bottom: 10px;
+  text-shadow: 2px 2px 4px #000;
 }
 
 /* Settings Specific Styles */

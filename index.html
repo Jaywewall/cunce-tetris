@@ -68,6 +68,16 @@
       </div>
     </div>
 
+    <!-- Game Over Menu -->
+    <div id="game-over-menu" class="menu-overlay hidden">
+      <div class="menu-content">
+        <h1>GAME OVER</h1>
+        <h2 id="winner-text" style="margin-bottom: 30px; color: #28c84a;">Player 1 Wins!</h2>
+        <button id="btn-next-round" class="menu-button selected">NEXT ROUND</button>
+        <button id="btn-quit-gameover" class="menu-button">QUIT</button>
+      </div>
+    </div>
+
     <div id="game-container"></div>
 
     <template id="full-game-template">
@@ -78,6 +88,7 @@
           <canvas class='garbage' width='35' height='595'></canvas>
         </div>
         <div class="mid-column">
+          <div class="win-counter">Wins: <span class="wins">0</span></div>
           <canvas class='tetris' width='350' height='735'></canvas>
           <div class="score">-</div>
         </div>
